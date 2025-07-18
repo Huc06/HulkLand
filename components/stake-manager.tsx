@@ -332,7 +332,6 @@ export default function StakeManager() {
             const totalAmount = stakedNFTs.reduce((sum, nft) => sum + nft.materials[key as keyof typeof nft.materials], 0);
             return (
               <div key={key} className="text-center p-4 rounded-lg bg-card/50">
-                <div className="text-2xl mb-2">{material.icon}</div>
                 <div className="font-semibold text-sm" style={{ color: material.color }}>
                   {material.name}
                 </div>
@@ -501,7 +500,7 @@ export default function StakeManager() {
                       {nft.isUnstaking && (
                         <div className="mt-2">
                           <div className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full">
-                            🔒 {t('staking.unstaking')}: {Math.max(0, 3 - (Date.now() - (nft.unstakeRequestAt || 0)) / 1000 / 86400).toFixed(1)} ngày
+                            {t('staking.unstaking')}: {Math.max(0, 3 - (Date.now() - (nft.unstakeRequestAt || 0)) / 1000 / 86400).toFixed(1)} ngày
                           </div>
                         </div>
                       )}
@@ -513,7 +512,7 @@ export default function StakeManager() {
                         return (
                           <div key={key} className="flex justify-between items-center">
                             <span className="text-xs flex items-center gap-1">
-                              {material.icon} {material.name}
+                              {material.name}
                             </span>
                             <span className="font-semibold text-sm" style={{ color: material.color }}>
                               {amount}
@@ -557,12 +556,12 @@ export default function StakeManager() {
             items={[
               {
                 key: "MATERIALS",
-                label: `📊 ${t('staking.materials')}`,
+                label: `${t('staking.materials')}`,
                 children: renderMaterialsUI()
               },
               {
                 key: "ERC721",
-                label: `🏞️ ${t('staking.manageLand')}`,
+                label: `${t('staking.manageLand')}`,
                 children: renderNFTUI()
               }
             ]}

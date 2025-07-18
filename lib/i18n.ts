@@ -60,11 +60,64 @@ export const translations = {
     
     // Mint page
     minting: {
-      title: "Tạo Land NFT",
-      description: "Tạo ra những mảnh đất NFT độc đáo trong HulkLand",
-      mintButton: "Mint Land NFT",
+      title: "Bộ sưu tập HulkLand NFT",
+      description: "Bộ sưu tập NFT độc quyền với 10,000 Land NFT hiếm",
+      collection: {
+        title: "Bộ sưu tập HulkLand NFT độc quyền!",
+        totalNFTs: "10,000 Land NFT độc đáo với metadata hiếm",
+        whitelistOnly: "Whitelist Only - Chỉ những người có whitelist mới có thể mint",
+        specialQuests: "Nhiệm vụ đặc biệt để nhận whitelist",
+        mining: "Khai thác nguyên liệu và crafting độc quyền"
+      },
+      locked: {
+        title: "Mint hiện đang tạm khoá",
+        requirements: "Để mint Land NFT, bạn cần:",
+        step1: "Tham gia các nhiệm vụ đặc biệt của HulkLand",
+        step2: "Nhận được whitelist từ team", 
+        step3: "Chờ thông báo mở mint từ chúng tôi"
+      },
+      whitelist: {
+        title: "Làm sao để có Whitelist?",
+        discord: "Join Discord",
+        discordDesc: "Tham gia cộng đồng HulkLand",
+        social: "Follow Social", 
+        socialDesc: "Follow Twitter & Telegram",
+        quest: "Complete Quest",
+        questDesc: "Hoàn thành nhiệm vụ đặc biệt"
+      },
+      mintButton: "Mint đang khoá - Cần Whitelist",
       success: "Mint thành công!",
+      successDesc: "Chúc mừng! Bạn là Whitelist Holder đặc biệt.",
+      successAction: "Giờ bạn có thể bắt đầu khai thác nguyên liệu hiếm!",
       error: "Mint thất bại"
+    },
+
+    // Crafting page
+    crafting: {
+      title: "HulkLand Crafting Station",
+      subtitle: "Sử dụng nguyên liệu hiếm để nâng cấp Land NFT của bạn",
+      developmentNotice: {
+        title: "Tính năng đang được phát triển",
+        description: "HulkLand Crafting System đang trong quá trình hoàn thiện:",
+        features: {
+          "0": "Hệ thống chế tạo vật phẩm từ nguyên liệu hiếm",
+          "1": "Nâng cấp Land NFT với các thuộc tính mạnh mẽ", 
+          "2": "Công thức chế tạo độc quyền và hiếm",
+          "3": "Smart contract integration hoàn chỉnh"
+        },
+        launchDate: "Dự kiến ra mắt: Q2 2025",
+        followUp: "Hãy theo dõi cập nhật từ team HulkLand!"
+      },
+      demo: {
+        title: "Nâng cấp NFT (Demo)",
+        resources: "Tài nguyên hiện có:",
+        resourceTokens: "Resource Tokens",
+        warning: "Tính năng này chỉ là demo, chưa kết nối smart contract",
+        selectLabel: "Chọn Land NFT để nâng cấp",
+        placeholder: "Đang phát triển...",
+        button: "Tính năng đang phát triển",
+        footer: "Crafting system sẽ sớm có mặt với đầy đủ tính năng!"
+      }
     },
     
     // Common
@@ -140,11 +193,64 @@ export const translations = {
     
     // Mint page
     minting: {
-      title: "Create Land NFT",
-      description: "Create unique Land NFTs in HulkLand",
-      mintButton: "Mint Land NFT",
+      title: "HulkLand NFT Collection",
+      description: "Exclusive NFT collection with 10,000 rare Land NFTs",
+      collection: {
+        title: "Exclusive HulkLand NFT Collection!",
+        totalNFTs: "10,000 unique Land NFTs with rare metadata",
+        whitelistOnly: "Whitelist Only - Only whitelisted users can mint",
+        specialQuests: "Special quests to earn whitelist",
+        mining: "Exclusive material mining and crafting"
+      },
+      locked: {
+        title: "Mint is currently locked",
+        requirements: "To mint Land NFT, you need to:",
+        step1: "Participate in HulkLand special quests",
+        step2: "Get whitelist from our team",
+        step3: "Wait for our mint opening announcement"
+      },
+      whitelist: {
+        title: "How to get Whitelist?",
+        discord: "Join Discord",
+        discordDesc: "Join HulkLand community",
+        social: "Follow Social",
+        socialDesc: "Follow Twitter & Telegram", 
+        quest: "Complete Quest",
+        questDesc: "Complete special missions"
+      },
+      mintButton: "Mint Locked - Whitelist Required",
       success: "Mint successful!",
+      successDesc: "Congratulations! You are a special Whitelist Holder.",
+      successAction: "Now you can start mining rare materials!",
       error: "Mint failed"
+    },
+
+    // Crafting page
+    crafting: {
+      title: "HulkLand Crafting Station",
+      subtitle: "Use rare materials to upgrade your Land NFTs",
+      developmentNotice: {
+        title: "Feature in Development",
+        description: "HulkLand Crafting System is being perfected:",
+        features: {
+          "0": "Item crafting system from rare materials",
+          "1": "Upgrade Land NFTs with powerful attributes",
+          "2": "Exclusive and rare crafting recipes",
+          "3": "Complete smart contract integration"
+        },
+        launchDate: "Expected launch: Q2 2025",
+        followUp: "Stay tuned for updates from HulkLand team!"
+      },
+      demo: {
+        title: "Upgrade NFT (Demo)",
+        resources: "Current resources:",
+        resourceTokens: "Resource Tokens",
+        warning: "This feature is demo only, not connected to smart contract",
+        selectLabel: "Select Land NFT to upgrade",
+        placeholder: "In development...",
+        button: "Feature in development",
+        footer: "Crafting system will be available soon with full features!"
+      }
     },
     
     // Common

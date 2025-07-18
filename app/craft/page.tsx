@@ -7,6 +7,7 @@ import { NftCard } from "@/components/nft-card"
 import { toast } from "@/hooks/use-toast"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
+import { useLanguage } from "@/lib/language-context"
 
 interface LandNFT {
   id: number
@@ -53,6 +54,7 @@ const mockNFTs: LandNFT[] = [
 ]
 
 export default function CraftingPage() {
+  const { t } = useLanguage()
   const [nfts, setNfts] = React.useState<LandNFT[]>(mockNFTs)
   const [resourceTokens, setResourceTokens] = React.useState(500) // Mock resource tokens
   const [selectedNftId, setSelectedNftId] = React.useState<string | null>(null)
@@ -106,22 +108,49 @@ export default function CraftingPage() {
 
   return (
     <div className="flex flex-col gap-8 py-8">
-      <h2 className="text-3xl font-bold text-center">Crafting Station</h2>
-      <p className="text-center text-muted-foreground">Sử dụng Resource Tokens để nâng cấp Land NFT của bạn.</p>
+      <div className="text-center space-y-4">
+        <h2 className="text-3xl font-bold">{t('crafting.title')}</h2>
+        <p className="text-muted-foreground">{t('crafting.subtitle')}</p>
+        
+        {/* Thông báo đang phát triển */}
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg max-w-2xl mx-auto">
+          <div className="flex items-center mb-3">
+            <h3 className="text-lg font-semibold text-yellow-800">{t('crafting.developmentNotice.title')}</h3>
+          </div>
+          <div className="text-yellow-700 space-y-2">
+            <p><strong>{t('crafting.developmentNotice.description')}</strong></p>
+            <ul className="list-disc list-inside space-y-1 text-left">
+              <li>{t('crafting.developmentNotice.features.0')}</li>
+              <li>{t('crafting.developmentNotice.features.1')}</li>
+              <li>{t('crafting.developmentNotice.features.2')}</li>
+              <li>{t('crafting.developmentNotice.features.3')}</li>
+            </ul>
+            <div className="mt-4 p-3 bg-yellow-100 rounded-md">
+              <p className="font-medium">{t('crafting.developmentNotice.launchDate')}</p>
+              <p className="text-sm">{t('crafting.developmentNotice.followUp')}</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <Card className="w-full max-w-md mx-auto">
+      <Card className="w-full max-w-md mx-auto opacity-60">
         <CardHeader>
-          <CardTitle>Nâng cấp NFT</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            {t('crafting.demo.title')}
+          </CardTitle>
           <CardDescription>
-            Tài nguyên hiện có: <span className="font-semibold">{resourceTokens} Resource Tokens</span>
+            <div className="space-y-2">
+              <div>{t('crafting.demo.resources')} <span className="font-semibold">{resourceTokens} {t('crafting.demo.resourceTokens')}</span></div>
+              <div className="text-xs text-orange-600 font-medium">{t('crafting.demo.warning')}</div>
+            </div>
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="select-nft">Chọn Land NFT để nâng cấp</Label>
-            <Select onValueChange={setSelectedNftId} value={selectedNftId || ""}>
+            <Label htmlFor="select-nft">{t('crafting.demo.selectLabel')}</Label>
+            <Select onValueChange={setSelectedNftId} value={selectedNftId || ""} disabled>
               <SelectTrigger id="select-nft">
-                <SelectValue placeholder="Chọn NFT" />
+                <SelectValue placeholder={t('crafting.demo.placeholder')} />
               </SelectTrigger>
               <SelectContent>
                 {availableNFTs.length > 0 ? (
@@ -157,9 +186,13 @@ export default function CraftingPage() {
             </div>
           )}
 
-          <Button onClick={handleCraft} disabled={!selectedNftId || resourceTokens < upgradeCost}>
-            Nâng cấp NFT
+          <Button onClick={handleCraft} disabled={true} className="opacity-50">
+            {t('crafting.demo.button')}
           </Button>
+          
+          <div className="text-xs text-center text-gray-500 mt-2">
+            <p>{t('crafting.demo.footer')}</p>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -249,7 +249,6 @@ export default function StakeManager() {
             const totalAmount = stakedNFTs.reduce((sum, nft) => sum + nft.materials[key as keyof typeof nft.materials], 0);
             return (
               <div key={key} className="text-center p-4 rounded-lg bg-card/50">
-                <div className="text-2xl mb-2">{material.icon}</div>
                 <div className="font-semibold text-sm" style={{ color: material.color }}>
                   {material.name}
                 </div>
@@ -383,7 +382,7 @@ export default function StakeManager() {
                         return (
                           <div key={key} className="flex justify-between items-center">
                             <span className="text-xs flex items-center gap-1">
-                              {material.icon} {material.name}
+                              {material.name}
                             </span>
                             <span className="font-semibold text-sm" style={{ color: material.color }}>
                               {amount}
@@ -418,12 +417,12 @@ export default function StakeManager() {
           items={[
             {
               key: "MATERIALS",
-              label: "📊 Nguyên liệu Hiếm",
+              label: "Nguyên liệu Hiếm",
               children: renderMaterialsUI()
             },
             {
               key: "ERC721",
-              label: "🏞️ Quản lý Land NFT",
+              label: "Quản lý Land NFT",
               children: renderNFTUI()
             }
           ]}

@@ -36,6 +36,7 @@ export const translations = {
     // Stake page
     staking: {
       title: "Hệ thống Khai thác Nguyên liệu Hiếm",
+      subtitle: "Stake Land NFT để khai thác nguyên liệu hiếm và phát triển đế chế của bạn",
       materials: "Nguyên liệu Hiếm",
       manageLand: "Quản lý Land NFT",
       newStake: "Stake Land NFT mới",
@@ -87,9 +88,30 @@ export const translations = {
       },
       mintButton: "Mint đang khoá - Cần Whitelist",
       success: "Mint thành công!",
-      successDesc: "Chúc mừng! Bạn là Whitelist Holder đặc biệt.",
+      successDesc: "Bạn đã mint HulkLand NFT thành công!",
+      successMessage: "Chúc mừng! Bạn là Whitelist Holder đặc biệt.",
       successAction: "Giờ bạn có thể bắt đầu khai thác nguyên liệu hiếm!",
-      error: "Mint thất bại"
+      successButton: "Tuyệt vời!",
+      error: "Mint thất bại",
+      form: {
+        nameLabel: "Tên Land NFT",
+        namePlaceholder: "Nhập tên cho mảnh đất NFT của bạn",
+        imageLabel: "Hình ảnh Land",
+        uploadButton: "Tải lên hình ảnh"
+      },
+      stats: {
+        minted: "Đã mint"
+      },
+      emptyState: {
+        title: "Chưa có HulkLand NFT nào.",
+        subtitle: "Tham gia whitelist để mint NFT đầu tiên!",
+        remaining: "Chỉ còn"
+      },
+      nftCard: {
+        whitelistHolder: "Whitelist Holder",
+        readyToMine: "Sẵn sàng khai thác",
+        clickDetails: "Nhấn để xem chi tiết"
+      }
     },
 
     // Crafting page
@@ -169,6 +191,7 @@ export const translations = {
     // Stake page
     staking: {
       title: "Rare Materials Mining System",
+      subtitle: "Stake Land NFTs to mine rare materials and develop your empire",
       materials: "Rare Materials",
       manageLand: "Manage Land NFT",
       newStake: "Stake New Land NFT",
@@ -218,11 +241,32 @@ export const translations = {
         quest: "Complete Quest",
         questDesc: "Complete special missions"
       },
-      mintButton: "Mint Locked - Whitelist Required",
+      mintButton: "Mint Locked - Need Whitelist",
       success: "Mint successful!",
-      successDesc: "Congratulations! You are a special Whitelist Holder.",
+      successDesc: "You have successfully minted HulkLand NFT!",
+      successMessage: "Congratulations! You are a special Whitelist Holder.",
       successAction: "Now you can start mining rare materials!",
-      error: "Mint failed"
+      successButton: "Awesome!",
+      error: "Mint failed",
+      form: {
+        nameLabel: "Land NFT Name",
+        namePlaceholder: "Enter name for your Land NFT",
+        imageLabel: "Land Image",
+        uploadButton: "Upload image"
+      },
+      stats: {
+        minted: "Minted"
+      },
+      emptyState: {
+        title: "No HulkLand NFTs yet.",
+        subtitle: "Join whitelist to mint your first NFT!",
+        remaining: "Only"
+      },
+      nftCard: {
+        whitelistHolder: "Whitelist Holder",
+        readyToMine: "Ready to mine",
+        clickDetails: "Click to view details"
+      }
     },
 
     // Crafting page

@@ -145,23 +145,23 @@ export default function MintNFT() {
           <div className="max-w-2xl mx-auto text-center">
             {/* Thông báo về collection */}
             <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 p-8 rounded-xl mb-6">
-              <h2 className="text-2xl font-bold mb-4">Bộ sưu tập HulkLand NFT độc quyền!</h2>
+              <h2 className="text-2xl font-bold mb-4">{t('minting.collection.title')}</h2>
               <div className="space-y-4 text-left max-w-lg mx-auto">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                  <span><strong>10,000 Land NFT</strong> độc đáo với metadata hiếm</span>
+                  <span><strong>{t('minting.collection.totalNFTs')}</strong></span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span><strong>Whitelist Only</strong> - Chỉ những người có whitelist mới có thể mint</span>
+                  <span><strong>{t('minting.collection.whitelistOnly')}</strong></span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span><strong>Nhiệm vụ đặc biệt</strong> để nhận whitelist</span>
+                  <span><strong>{t('minting.collection.specialQuests')}</strong></span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                  <span><strong>Khai thác nguyên liệu</strong> và crafting độc quyền</span>
+                  <span><strong>{t('minting.collection.mining')}</strong></span>
                 </div>
               </div>
             </div>
@@ -169,14 +169,14 @@ export default function MintNFT() {
             {/* Thông báo mint đang khoá */}
             <div className="bg-orange-50 border-l-4 border-orange-400 p-6 rounded-lg mb-6">
               <div className="flex items-center mb-3">
-                <h3 className="text-lg font-semibold text-orange-800">Mint hiện đang tạm khoá</h3>
+                <h3 className="text-lg font-semibold text-orange-800">{t('minting.locked.title')}</h3>
               </div>
               <div className="text-orange-700 space-y-2">
-                <p><strong>Để mint Land NFT, bạn cần:</strong></p>
+                <p><strong>{t('minting.locked.requirements')}</strong></p>
                 <ol className="list-decimal list-inside space-y-1 text-left">
-                  <li>Tham gia các nhiệm vụ đặc biệt của HulkLand</li>
-                  <li>Nhận được whitelist từ team</li>
-                  <li>Chờ thông báo mở mint từ chúng tôi</li>
+                  <li>{t('minting.locked.step1')}</li>
+                  <li>{t('minting.locked.step2')}</li>
+                  <li>{t('minting.locked.step3')}</li>
                 </ol>
               </div>
             </div>
@@ -184,17 +184,17 @@ export default function MintNFT() {
             {/* Form mint bị disable */}
             <div className="max-w-md mx-auto opacity-50 pointer-events-none">
               <Form layout="vertical">
-                <Form.Item label="Tên Land NFT">
+                <Form.Item label={t('minting.form.nameLabel')}>
                   <Input 
                     value={nftName} 
                     onChange={(e) => setNFTName(e.target.value)}
-                    placeholder="Nhập tên cho mảnh đất NFT của bạn"
+                    placeholder={t('minting.form.namePlaceholder')}
                     size="large"
                     disabled
                   />
                 </Form.Item>
                 
-                <Form.Item label="Hình ảnh Land">
+                <Form.Item label={t('minting.form.imageLabel')}>
                   <Upload 
                     beforeUpload={(file) => { 
                       setNFTImage(file); 
@@ -210,7 +210,7 @@ export default function MintNFT() {
                       className="w-full h-12"
                       disabled
                     >
-                      {nftImage ? nftImage.name : "Tải lên hình ảnh"}
+                      {nftImage ? nftImage.name : t('minting.form.uploadButton')}
                     </Button>
                   </Upload>
                 </Form.Item>
@@ -223,67 +223,67 @@ export default function MintNFT() {
                   className="w-full h-12 text-lg"
                   disabled
                 >
-                  Mint đang khoá - Cần Whitelist
+                  {t('minting.mintButton')}
                 </Button>
               </Form>
             </div>
 
             {/* Call to action */}
             <div className="mt-8 space-y-4">
-              <h4 className="text-lg font-semibold">Làm sao để có Whitelist?</h4>
+              <h4 className="text-lg font-semibold">{t('minting.whitelist.title')}</h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-blue-50 p-4 rounded-lg">
-                  <h5 className="font-semibold">Join Discord</h5>
-                  <p className="text-sm text-gray-600">Tham gia cộng đồng HulkLand</p>
+                  <h5 className="font-semibold">{t('minting.whitelist.discord')}</h5>
+                  <p className="text-sm text-gray-600">{t('minting.whitelist.discordDesc')}</p>
                 </div>
                 <div className="bg-green-50 p-4 rounded-lg">
-                  <h5 className="font-semibold">Follow Social</h5>
-                  <p className="text-sm text-gray-600">Follow Twitter & Telegram</p>
+                  <h5 className="font-semibold">{t('minting.whitelist.social')}</h5>
+                  <p className="text-sm text-gray-600">{t('minting.whitelist.socialDesc')}</p>
                 </div>
                 <div className="bg-purple-50 p-4 rounded-lg">
-                  <h5 className="font-semibold">Complete Quest</h5>
-                  <p className="text-sm text-gray-600">Hoàn thành nhiệm vụ đặc biệt</p>
+                  <h5 className="font-semibold">{t('minting.whitelist.quest')}</h5>
+                  <p className="text-sm text-gray-600">{t('minting.whitelist.questDesc')}</p>
                 </div>
               </div>
             </div>
           </div>
 
           <Modal
-            title="Mint thành công!"
+            title={t('minting.success')}
             open={isSuccessModalVisible}
             onOk={() => setIsSuccessModalVisible(false)}
             onCancel={() => setIsSuccessModalVisible(false)}
             centered
             footer={[
               <Button key="ok" type="primary" onClick={() => setIsSuccessModalVisible(false)}>
-                Tuyệt vời!
+                {t('minting.successButton')}
               </Button>
             ]}
           >
             <div className="text-center py-4">
-              <p className="text-lg">Bạn đã mint HulkLand NFT thành công!</p>
-              <p className="text-gray-600">Chúc mừng! Bạn là Whitelist Holder đặc biệt.</p>
-              <p className="text-blue-600 font-medium">Giờ bạn có thể bắt đầu khai thác nguyên liệu hiếm!</p>
+              <p className="text-lg">{t('minting.successDesc')}</p>
+              <p className="text-gray-600">{t('minting.successMessage')}</p>
+              <p className="text-blue-600 font-medium">{t('minting.successAction')}</p>
             </div>
           </Modal>
         </Card>
 
-        <Card title={`Bộ sưu tập HulkLand NFT (${nftList.length}/10,000)`}>
+        <Card title={`${t('minting.collection.title')} (${nftList.length}/10,000)`}>
           <div className="mb-4 text-center">
             <div className="bg-gradient-to-r from-green-500/10 to-blue-500/10 p-4 rounded-lg inline-block">
               <span className="text-lg font-semibold">
-                Đã mint: <span className="text-green-600">{nftList.length}</span> / <span className="text-blue-600">10,000</span> NFT
+                {t('minting.stats.minted')}: <span className="text-green-600">{nftList.length}</span> / <span className="text-blue-600">10,000</span> NFT
               </span>
             </div>
           </div>
           
           {nftList.length === 0 ? (
             <div className="text-center py-12 text-gray-500">
-              <p className="text-lg mb-2">Chưa có HulkLand NFT nào.</p>
-              <p className="text-sm">Tham gia whitelist để mint NFT đầu tiên!</p>
+              <p className="text-lg mb-2">{t('minting.emptyState.title')}</p>
+              <p className="text-sm">{t('minting.emptyState.subtitle')}</p>
               <div className="mt-6">
                 <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg inline-block">
-                  <p className="text-yellow-800 font-medium">Chỉ còn <strong>{10000 - nftList.length}</strong> NFT available!</p>
+                  <p className="text-yellow-800 font-medium">{t('minting.emptyState.remaining')}: <strong>{10000 - nftList.length}</strong> NFT available!</p>
                 </div>
               </div>
             </div>
@@ -316,9 +316,9 @@ export default function MintNFT() {
                       title={`HulkLand #${item.id}`}
                       description={
                         <div className="space-y-2">
-                          <div className="text-green-600 font-medium">Whitelist Holder</div>
-                          <div className="text-blue-600 font-medium">Sẵn sàng khai thác</div>
-                          <div className="text-xs text-gray-500">Nhấn để xem chi tiết</div>
+                          <div className="text-green-600 font-medium">{t('minting.nftCard.whitelistHolder')}</div>
+                          <div className="text-blue-600 font-medium">{t('minting.nftCard.readyToMine')}</div>
+                          <div className="text-xs text-gray-500">{t('minting.nftCard.clickDetails')}</div>
                         </div>
                       }
                     />

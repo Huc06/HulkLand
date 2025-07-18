@@ -5,6 +5,7 @@ import { Button, Input, Card, Form, message, List, Image, Tabs, Progress, Badge,
 import { useWriteContract, useReadContract } from "wagmi";
 import { parseUnits } from "viem";
 import { useAccount } from "wagmi";
+import { useLanguage } from "@/lib/language-context";
 
 const VAULT_ADDRESS = "0x6CcB55772b7Cf9152dE7B63e10B447fee8857C03";
 // const TOKEN_ADDRESS = "0xfaEe7aDa44A8a27b9c0fC6128E3Ad639e293afd5";
@@ -23,6 +24,9 @@ interface StakedNFT {
   id: number;
   uri: string;
   stakedAt: number;
+  lastClaimAt: number;
+  unstakeRequestAt?: number; // Thời điểm yêu cầu unstake
+  isUnstaking: boolean; // Có đang trong quá trình unstake không
   materials: {
     mysticCrystal: number;
     dragonScale: number;
@@ -54,6 +58,7 @@ const VAULT_ABI = [
 ];
 
 export default function StakeManager() {
+  const { t } = useLanguage();
   const [assetType, setAssetType] = useState<"MATERIALS" | "ERC721">("MATERIALS");
   const [tokenId, setTokenId] = useState("");
   const [stakedNFTs, setStakedNFTs] = useState<StakedNFT[]>([]);
@@ -69,19 +74,28 @@ export default function StakeManager() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(Date.now());
-      // Update materials for staked NFTs
+      // Update materials for staked NFTs based on 24h cycle
       setStakedNFTs(prev => prev.map(nft => {
-        const timeStaked = (Date.now() - nft.stakedAt) / 1000; // seconds
-        const baseRate = 0.1; // base materials per second
+        if (nft.isUnstaking) return nft; // Không tạo materials nếu đang unstake
+        
+        const timeSinceLastClaim = (Date.now() - nft.lastClaimAt) / 1000; // seconds
+        const hoursStaked = timeSinceLastClaim / 3600; // hours
+        
+        // Chỉ tính materials nếu đã stake ít nhất 1 giờ
+        if (hoursStaked < 1) return nft;
+        
+        // Tính materials dựa trên số giờ đã stake (max 24h cho 1 cycle)
+        const effectiveHours = Math.min(hoursStaked, 24);
+        const baseRate = 1; // base materials per hour
         
         return {
           ...nft,
           materials: {
-            mysticCrystal: Math.floor(timeStaked * baseRate * 0.2), // Legendary - rarest
-            dragonScale: Math.floor(timeStaked * baseRate * 0.3), // Epic
-            ancientOre: Math.floor(timeStaked * baseRate * 0.5), // Rare
-            etherealEssence: Math.floor(timeStaked * baseRate * 0.3), // Epic
-            shadowStone: Math.floor(timeStaked * baseRate * 0.4) // Rare
+            mysticCrystal: Math.floor(effectiveHours * baseRate * 0.5), // Legendary - 12 per 24h
+            dragonScale: Math.floor(effectiveHours * baseRate * 0.8), // Epic - 19.2 per 24h  
+            ancientOre: Math.floor(effectiveHours * baseRate * 1.2), // Rare - 28.8 per 24h
+            etherealEssence: Math.floor(effectiveHours * baseRate * 0.7), // Epic - 16.8 per 24h
+            shadowStone: Math.floor(effectiveHours * baseRate * 1.0) // Rare - 24 per 24h
           }
         };
       }));
@@ -116,6 +130,8 @@ export default function StakeManager() {
         id,
         uri: getNFTImageURI(id) || "",
         stakedAt: Date.now(),
+        lastClaimAt: Date.now(),
+        isUnstaking: false,
         materials: {
           mysticCrystal: 0,
           dragonScale: 0,
@@ -147,7 +163,7 @@ export default function StakeManager() {
 
   const handleStakeNFT = async () => {
     if (!tokenId) {
-      message.error("Vui lòng nhập Token ID của Land NFT");
+      message.error(t('staking.tokenIdPlaceholder'));
       return;
     }
 
@@ -170,7 +186,7 @@ export default function StakeManager() {
         functionName: "depositNFT",
         args: [NFT_ADDRESS, BigInt(tokenId)]
       });
-      message.success({ content: "Land NFT đã được stake thành công!", key: "staking" });
+      message.success({ content: t('staking.stakeButton') + " thành công!", key: "staking" });
 
       setTokenId("");
       setTimeout(() => {
@@ -184,6 +200,35 @@ export default function StakeManager() {
 
   const handleUnstakeNFT = async (id: number) => {
     try {
+      const stakedNFT = stakedNFTs.find(nft => nft.id === id);
+      if (!stakedNFT) return;
+
+      // Nếu chưa yêu cầu unstake, bắt đầu quá trình unstake (khoá 3 ngày)
+      if (!stakedNFT.isUnstaking) {
+        setStakedNFTs(prev => prev.map(nft => 
+          nft.id === id 
+            ? {
+                ...nft,
+                isUnstaking: true,
+                unstakeRequestAt: Date.now()
+              }
+            : nft
+        ));
+        message.warning({
+          content: "NFT đã được đánh dấu để unstake. Bạn cần đợi 3 ngày để hoàn tất quá trình unstake.",
+          duration: 5
+        });
+        return;
+      }
+
+      // Kiểm tra đã đủ 3 ngày chưa
+      const daysSinceRequest = (Date.now() - (stakedNFT.unstakeRequestAt || 0)) / 1000 / 86400; // days
+      if (daysSinceRequest < 3) {
+        message.warning(`Bạn cần đợi thêm ${(3 - daysSinceRequest).toFixed(1)} ngày nữa để unstake`);
+        return;
+      }
+
+      // Thực hiện unstake thực sự
       message.loading({ content: "Unstaking Land NFT...", key: "unstaking" });
       await writeContractAsync({
         address: VAULT_ADDRESS,
@@ -191,7 +236,7 @@ export default function StakeManager() {
         functionName: "withdrawNFT",
         args: [NFT_ADDRESS, BigInt(id)]
       });
-      message.success({ content: "Land NFT đã được unstake thành công!", key: "unstaking" });
+      message.success({ content: t('staking.unstake') + " thành công!", key: "unstaking" });
 
       // Remove from staked list
       setStakedNFTs(prev => prev.filter(nft => nft.id !== id));
@@ -209,12 +254,28 @@ export default function StakeManager() {
     const nft = stakedNFTs.find(n => n.id === id);
     if (!nft) return;
 
-    // Reset materials to 0 and update staked time
+    // Kiểm tra 24h từ lần claim cuối
+    const timeSinceLastClaim = (Date.now() - nft.lastClaimAt) / 1000 / 3600; // hours
+    if (timeSinceLastClaim < 24) {
+      const remainingHours = 24 - timeSinceLastClaim;
+      const hours = Math.floor(remainingHours);
+      const minutes = Math.floor((remainingHours - hours) * 60);
+      message.warning(`Bạn cần đợi thêm ${hours}h ${minutes}m nữa để claim nguyên liệu`);
+      return;
+    }
+
+    // Kiểm tra có nguyên liệu để claim không
+    if (!nft.materials || Object.values(nft.materials).every(amount => amount === 0)) {
+      message.warning('Không có nguyên liệu để claim');
+      return;
+    }
+
+    // Reset materials và cập nhật lastClaimAt
     setStakedNFTs(prev => prev.map(n => 
       n.id === id 
         ? {
             ...n,
-            stakedAt: Date.now(),
+            lastClaimAt: Date.now(), // Cập nhật thời gian claim cuối
             materials: {
               mysticCrystal: 0,
               dragonScale: 0,
@@ -230,6 +291,28 @@ export default function StakeManager() {
       content: `Đã thu hoạch nguyên liệu từ Land NFT #${id}!`,
       duration: 3
     });
+  };
+
+  // Hàm tính thời gian còn lại để claim
+  const getTimeUntilNextClaim = (lastClaimAt: number) => {
+    const timeSinceLastClaim = (Date.now() - lastClaimAt) / 1000 / 3600; // hours
+    if (timeSinceLastClaim >= 24) return null; // Có thể claim rồi
+    
+    const remainingHours = 24 - timeSinceLastClaim;
+    const hours = Math.floor(remainingHours);
+    const minutes = Math.floor((remainingHours - hours) * 60);
+    const seconds = Math.floor(((remainingHours - hours) * 60 - minutes) * 60);
+    
+    return { hours, minutes, seconds, canClaim: false };
+  };
+
+  // Hàm format thời gian hiển thị
+  const formatTimeDisplay = (timeData: { hours: number; minutes: number; seconds: number } | null) => {
+    if (!timeData) return "Có thể thu hoạch";
+    const { hours, minutes, seconds } = timeData;
+    if (hours > 0) return `${hours}h ${minutes}m`;
+    if (minutes > 0) return `${minutes}m ${seconds}s`;
+    return `${seconds}s`;
   };
 
   // Get NFT image URI from userNFTsWithURIs data
@@ -261,11 +344,11 @@ export default function StakeManager() {
         </div>
       </Card>
 
-      <Card title="Tổng quan khai thác">
+      <Card title={t('staking.overview')}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
           <div className="p-4 bg-green-50 rounded-lg">
             <div className="text-2xl font-bold text-green-600">{stakedNFTs.length}</div>
-            <div className="text-sm text-green-700">Land NFT đang stake</div>
+            <div className="text-sm text-green-700">{t('staking.activeStaking')}</div>
           </div>
           <div className="p-4 bg-blue-50 rounded-lg">
             <div className="text-2xl font-bold text-blue-600">
@@ -274,13 +357,13 @@ export default function StakeManager() {
                 return sum + stakedNFTs.reduce((nftSum, nft) => nftSum + nft.materials[key as keyof typeof nft.materials], 0);
               }, 0)}
             </div>
-            <div className="text-sm text-blue-700">Tổng nguyên liệu</div>
+            <div className="text-sm text-blue-700">{t('staking.totalMaterials')}</div>
           </div>
           <div className="p-4 bg-purple-50 rounded-lg">
             <div className="text-2xl font-bold text-purple-600">
               {stakedNFTs.length > 0 ? (stakedNFTs.reduce((sum, nft) => sum + (Date.now() - nft.stakedAt), 0) / (1000 * 60 * 60 * stakedNFTs.length)).toFixed(1) : "0"}h
             </div>
-            <div className="text-sm text-purple-700">Thời gian stake trung bình</div>
+            <div className="text-sm text-purple-700">{t('staking.avgStakeTime')}</div>
           </div>
         </div>
       </Card>
@@ -290,34 +373,34 @@ export default function StakeManager() {
   // Render Land NFT management UI
   const renderNFTUI = () => (
     <div className="space-y-6">
-      <Card title="Stake Land NFT mới" className="mb-6">
+      <Card title={t('staking.newStake')} className="mb-6">
         <Form layout="vertical">
-          <Form.Item label="Token ID của Land NFT">
+          <Form.Item label={t('staking.tokenIdLabel')}>
             <Input 
               value={tokenId} 
               onChange={e => setTokenId(e.target.value)} 
               type="number"
-              placeholder="Nhập Token ID"
+              placeholder={t('staking.tokenIdPlaceholder')}
               className="w-full"
             />
           </Form.Item>
           
           <div className="flex gap-3">
             <Button type="primary" onClick={handleStakeNFT} className="flex-1 sm:flex-none">
-              Stake Land NFT
+              {t('staking.stakeButton')}
             </Button>
             <Button type="default" onClick={refreshData} className="flex-1 sm:flex-none">
-              Refresh
+              {t('staking.refresh')}
             </Button>
           </div>
         </Form>
       </Card>
 
-      <Card title={`Land NFT đang khai thác (${stakedNFTs.length})`}>
+      <Card title={`${t('staking.mining')} (${stakedNFTs.length})`}>
         {stakedNFTs.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            <p>Chưa có Land NFT nào được stake</p>
-            <p className="text-sm">Stake Land NFT để bắt đầu khai thác nguyên liệu hiếm!</p>
+            <p>{t('staking.noNFTs')}</p>
+            <p className="text-sm">{t('staking.noNFTsDesc')}</p>
           </div>
         ) : (
           <List
@@ -349,32 +432,79 @@ export default function StakeManager() {
                     )
                   }
                   actions={[
-                    <Button 
+                    <Tooltip 
                       key="claim" 
-                      type="primary" 
-                      size="small" 
-                      onClick={() => handleClaimMaterials(nft.id)}
-                      className="mx-2"
+                      title={
+                        (() => {
+                          const timeData = getTimeUntilNextClaim(nft.lastClaimAt);
+                          return timeData ? `Còn lại: ${formatTimeDisplay(timeData)}` : "Có thể thu hoạch ngay";
+                        })()
+                      }
                     >
-                      Thu hoạch
-                    </Button>,
-                    <Button 
+                      <Button 
+                        type="primary" 
+                        size="small" 
+                        onClick={() => handleClaimMaterials(nft.id)}
+                        className="mx-2"
+                        disabled={getTimeUntilNextClaim(nft.lastClaimAt) !== null}
+                      >
+                        {t('staking.harvest')}
+                      </Button>
+                    </Tooltip>,
+                    <Tooltip 
                       key="unstake" 
-                      danger 
-                      size="small" 
-                      onClick={() => handleUnstakeNFT(nft.id)}
-                      className="mx-2"
+                      title={
+                        nft.isUnstaking 
+                          ? `Còn lại: ${Math.max(0, 3 - (Date.now() - (nft.unstakeRequestAt || 0)) / 1000 / 86400).toFixed(1)} ngày` 
+                          : "Bắt đầu quá trình unstake (3 ngày)"
+                      }
                     >
-                      Unstake
-                    </Button>
+                      <Button 
+                        danger 
+                        size="small" 
+                        onClick={() => handleUnstakeNFT(nft.id)}
+                        className="mx-2"
+                      >
+                        {nft.isUnstaking ? `Hoàn tất ${t('staking.unstake')}` : t('staking.unstake')}
+                      </Button>
+                    </Tooltip>
                   ]}
                 >
                   <div className="space-y-3">
                     <div className="text-center">
                       <h3 className="font-semibold">Land #{nft.id}</h3>
                       <p className="text-sm text-gray-600">
-                        Đang khai thác: {Math.floor((Date.now() - nft.stakedAt) / 60000)}m
+                        {t('staking.miningTime')}: {Math.floor((Date.now() - nft.stakedAt) / 60000)}m
                       </p>
+                      
+                      {/* Hiển thị thời gian claim */}
+                      <div className="mt-2">
+                        {(() => {
+                          const timeData = getTimeUntilNextClaim(nft.lastClaimAt);
+                          if (timeData) {
+                            return (
+                              <div className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full">
+                                ⏰ {t('staking.claimAfter')}: {formatTimeDisplay(timeData)}
+                              </div>
+                            );
+                          } else {
+                            return (
+                              <div className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full animate-pulse">
+                                ✅ {t('staking.canHarvest')}
+                              </div>
+                            );
+                          }
+                        })()}
+                      </div>
+
+                      {/* Hiển thị trạng thái unstaking */}
+                      {nft.isUnstaking && (
+                        <div className="mt-2">
+                          <div className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full">
+                            🔒 {t('staking.unstaking')}: {Math.max(0, 3 - (Date.now() - (nft.unstakeRequestAt || 0)) / 1000 / 86400).toFixed(1)} ngày
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     <div className="space-y-2">
@@ -394,10 +524,18 @@ export default function StakeManager() {
                     </div>
 
                     <Progress 
-                      percent={Math.min(100, ((Date.now() - nft.stakedAt) / (1000 * 60 * 10)) * 100)} 
+                      percent={Math.min(100, ((Date.now() - nft.lastClaimAt) / (1000 * 60 * 60 * 24)) * 100)} 
                       size="small"
-                      status="active"
-                      format={() => 'Khai thác...'}
+                      status={getTimeUntilNextClaim(nft.lastClaimAt) ? "active" : "success"}
+                      strokeColor={getTimeUntilNextClaim(nft.lastClaimAt) ? "#1890ff" : "#52c41a"}
+                      format={(percent) => {
+                        const timeData = getTimeUntilNextClaim(nft.lastClaimAt);
+                        if (timeData) {
+                          return `${Math.round(percent || 0)}%`;
+                        } else {
+                          return "100%";
+                        }
+                      }}
                     />
                   </div>
                 </Card>
@@ -412,19 +550,19 @@ export default function StakeManager() {
   return (
     <div className="w-full">
       <div className="max-w-7xl mx-auto p-4 sm:p-6">
-        <Card title="Hệ thống Khai thác Nguyên liệu Hiếm" className="mb-6">
+        <Card title={t('staking.title')} className="mb-6">
           <Tabs
             activeKey={assetType}
             onChange={(key) => setAssetType(key as "MATERIALS" | "ERC721")}
             items={[
               {
                 key: "MATERIALS",
-                label: "📊 Nguyên liệu Hiếm",
+                label: `📊 ${t('staking.materials')}`,
                 children: renderMaterialsUI()
               },
               {
                 key: "ERC721",
-                label: "🏞️ Quản lý Land NFT",
+                label: `🏞️ ${t('staking.manageLand')}`,
                 children: renderNFTUI()
               }
             ]}

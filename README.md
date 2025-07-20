@@ -160,7 +160,7 @@ sagaverse-mvp/
 
 Dự án được deploy tự động trên Vercel:
 
-**Live Demo**: [https://vercel.com/hucs-projects/v0-hulkland-mvp](https://vercel.com/hucs-projects/v0-hulkland-mvp)
+**Live Demo**: [https://hulk-land.vercel.app/]
 
 ### Deploy Steps
 1. Connect repository với Vercel

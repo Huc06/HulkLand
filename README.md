@@ -248,7 +248,7 @@ Dự án được deploy tự động trên Vercel:
 
 - **Documentation**: [Project Wiki](wiki-url)
 - **Discord**: [HulkLand Community](discord-url)
-- **Twitter**: [@HulkLandGame](twitter-url)
+- **Twitter**: [@HulkLandGame](https://x.com/HUCPINK/status/1947306425694159122)
 - **Email**: support@hulkland.game
 
 ## License
